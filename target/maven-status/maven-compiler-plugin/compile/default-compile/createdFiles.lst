@@ -1,6 +1,6 @@
 com\example\PrimaryController.class
-com\example\SecondaryController.class
 com\example\model\Veiculo.class
+com\example\data\VeiculoDao.class
+com\example\SecondaryController.class
 module-info.class
 com\example\App.class
-com\example\data\VeiculoDao.class
