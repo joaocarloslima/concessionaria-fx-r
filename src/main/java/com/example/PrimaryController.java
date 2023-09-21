@@ -50,6 +50,9 @@ public class PrimaryController implements Initializable {
 
     @FXML ComboBox<Cliente> cbCliente;
 
+    ClienteDao clienteDao;
+    VeiculoDao veiculoDao;
+
     public void adicionarVeiculo(){
         var veiculo = new Veiculo(
             null, 
@@ -87,7 +90,7 @@ public class PrimaryController implements Initializable {
         );
 
         try{
-            ClienteDao.inserir(cliente);
+            clienteDao.inserir(cliente);
             tabelaCliente.getItems().add(cliente);
         }catch(SQLException e){
             e.printStackTrace();
@@ -97,7 +100,7 @@ public class PrimaryController implements Initializable {
     public void carregarClientes(){
         tabelaCliente.getItems().clear();
         try {
-            var clientes = ClienteDao.buscarTodos();
+            var clientes = clienteDao.buscarTodos();
             clientes.forEach(cliente -> tabelaCliente.getItems().add(cliente));
         } catch (SQLException e) {
             e.printStackTrace();
@@ -152,12 +155,17 @@ public class PrimaryController implements Initializable {
         colValor.setCellFactory(TextFieldTableCell.forTableColumn(new BigDecimalStringConverter()));
         colValor.setOnEditCommit(e -> atualizarVeiculo(e.getRowValue().valor(e.getNewValue())));
 
+        colCliente.setCellValueFactory(new PropertyValueFactory<>("cliente"));
+
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colTelefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));
 
+        
         try {
-            cbCliente.getItems().addAll(ClienteDao.buscarTodos());
+            clienteDao = new ClienteDao();
+            veiculoDao = new VeiculoDao();
+            cbCliente.getItems().addAll(clienteDao.buscarTodos());
         } catch (SQLException e1) {
             mostrarMensagem("Erro", "Erro ao buscar clientes");
             e1.printStackTrace();
