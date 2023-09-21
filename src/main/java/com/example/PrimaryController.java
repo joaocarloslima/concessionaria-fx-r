@@ -12,10 +12,15 @@ import com.example.model.Veiculo;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.converter.BigDecimalStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
 public class PrimaryController implements Initializable {
 
@@ -94,12 +99,53 @@ public class PrimaryController implements Initializable {
         }
     }
 
-    @Override
+    public void apagarVeiculo(){
+        var veiculo = tabelaVeiculo.getSelectionModel().getSelectedItem();
+        if (veiculo == null) {
+            mostrarMensagem("Erro", "Você deve selecionar um veículo para apagar");
+            return;
+        }
+        try {
+            VeiculoDao.apagar(veiculo.getId());
+            tabelaVeiculo.getItems().remove(veiculo);
+        } catch (SQLException e) {
+            mostrarMensagem("Erro", "Erro o apagar");
+        }
+    }
+
+    public void atualizarVeiculo(Veiculo veiculo){
+        try {
+            VeiculoDao.atualizar(veiculo);
+        } catch (SQLException e) {
+            mostrarMensagem("Erro", "Erro ao atualizar dados");
+            e.printStackTrace();
+        }
+    }
+
+   private void mostrarMensagem(String titulo, String mensagem) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setHeaderText(titulo);
+        alert.setContentText(mensagem);
+        alert.show();
+    }
+
+ @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
         colMarca.setCellValueFactory(new PropertyValueFactory<>("marca"));
+        colMarca.setCellFactory(TextFieldTableCell.forTableColumn());
+        colMarca.setOnEditCommit(e -> atualizarVeiculo(e.getRowValue().marca(e.getNewValue())));
+        
         colModelo.setCellValueFactory(new PropertyValueFactory<>("modelo"));
+        colModelo.setCellFactory(TextFieldTableCell.forTableColumn());
+        colModelo.setOnEditCommit(e -> atualizarVeiculo(e.getRowValue().modelo(e.getNewValue())));
+        
         colAno.setCellValueFactory(new PropertyValueFactory<>("ano"));
+        colAno.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        colAno.setOnEditCommit(e -> atualizarVeiculo(e.getRowValue().ano(e.getNewValue())));
+        
         colValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
+        colValor.setCellFactory(TextFieldTableCell.forTableColumn(new BigDecimalStringConverter()));
+        colValor.setOnEditCommit(e -> atualizarVeiculo(e.getRowValue().valor(e.getNewValue())));
 
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
@@ -107,6 +153,9 @@ public class PrimaryController implements Initializable {
 
         carregarVeiculos();
         carregarClientes();
+
+        tabelaVeiculo.setEditable(true);
+        tabelaCliente.setEditable(true);
     }
 
    

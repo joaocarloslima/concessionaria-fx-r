@@ -48,4 +48,24 @@ public class VeiculoDao {
         conexao.close();
         return lista;
     }
+
+    public static void apagar(Long id) throws SQLException{
+        var conexao = DriverManager.getConnection(URL, USER, PASS);
+        var comando = conexao.prepareStatement("DELETE FROM veiculos WHERE id=?");
+        comando.setLong(1, id);
+        comando.executeUpdate();
+        conexao.close();
+    }
+
+    public static void atualizar(Veiculo veiculo) throws SQLException{
+        var conexao = DriverManager.getConnection(URL, USER, PASS);
+        var comando = conexao.prepareStatement("UPDATE veiculos SET marca=?, modelo=?, ano=?, valor=? WHERE id=?");
+        comando.setString(1, veiculo.getMarca());
+        comando.setString(2, veiculo.getModelo());
+        comando.setInt(3, veiculo.getAno());
+        comando.setBigDecimal(4, veiculo.getValor());
+        comando.setLong(5, veiculo.getId());
+        comando.executeUpdate();
+        conexao.close();
+    }
 }
