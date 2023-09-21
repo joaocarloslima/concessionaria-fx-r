@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.model.Cliente;
 import com.example.model.Veiculo;
 
 public class VeiculoDao {
@@ -16,12 +17,13 @@ public class VeiculoDao {
     public static void inserir(Veiculo veiculo) throws SQLException {
         var conexao = DriverManager.getConnection(URL, USER, PASS);
 
-        var sql = "INSERT INTO veiculos (marca, modelo, ano, valor) VALUES (?, ?, ?, ?) ";
+        var sql = "INSERT INTO veiculos (marca, modelo, ano, valor, cliente_id) VALUES (?, ?, ?, ?, ?) ";
         var comando = conexao.prepareStatement(sql);
         comando.setString(1,veiculo.getMarca());
         comando.setString(2, veiculo.getModelo());
         comando.setInt(3, veiculo.getAno());
         comando.setBigDecimal(4, veiculo.getValor());
+        comando.setLong(5, veiculo.getCliente().getId());
         comando.executeUpdate();
 
         conexao.close();
@@ -32,7 +34,7 @@ public class VeiculoDao {
         var lista = new ArrayList<Veiculo>();
 
         var conexao = DriverManager.getConnection(URL, USER, PASS);
-        var comando = conexao.prepareStatement("SELECT * FROM veiculos");
+        var comando = conexao.prepareStatement("SELECT veiculos.*, clientes.nome, clientes.email, clientes.telefone FROM veiculos INNER JOIN clientes ON veiculos.cliente_id=clientes.id");
         var resultado = comando.executeQuery();
 
         while(resultado.next()){
@@ -41,7 +43,13 @@ public class VeiculoDao {
                 resultado.getString("marca"), 
                 resultado.getString("modelo"), 
                 resultado.getInt("ano"), 
-                resultado.getBigDecimal("valor")
+                resultado.getBigDecimal("valor"),
+                new Cliente(
+                    resultado.getLong("cliente_id"),
+                    resultado.getString("nome"),
+                    resultado.getString("email"),
+                    resultado.getString("telefone")
+                )
             ));
         }
 

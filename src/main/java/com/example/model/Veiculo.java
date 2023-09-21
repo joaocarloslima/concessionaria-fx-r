@@ -9,13 +9,15 @@ public class Veiculo {
     private String modelo;
     private Integer ano;
     private BigDecimal valor;
+    private Cliente cliente;
     
-    public Veiculo(Long id, String marca, String modelo, Integer ano, BigDecimal valor) {
+    public Veiculo(Long id, String marca, String modelo, Integer ano, BigDecimal valor, Cliente cliente) {
         this.id = id;
         this.marca = marca;
         this.modelo = modelo;
         this.ano = ano;
         this.valor = valor;
+        this.cliente = cliente;
     }
 
     public Long getId() {
@@ -58,6 +60,8 @@ public class Veiculo {
         this.valor = valor;
     }
 
+    
+
     public Veiculo marca(String marca){
         this.marca = marca;
         return this;
@@ -76,6 +80,14 @@ public class Veiculo {
     public Veiculo valor(BigDecimal valor) {
         this.valor = valor;
         return this;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
     
     

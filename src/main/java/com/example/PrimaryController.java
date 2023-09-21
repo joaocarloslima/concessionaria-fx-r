@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -35,6 +36,7 @@ public class PrimaryController implements Initializable {
     @FXML TableColumn<Veiculo, String> colModelo;
     @FXML TableColumn<Veiculo, Integer> colAno;
     @FXML TableColumn<Veiculo, BigDecimal> colValor;
+    @FXML TableColumn<Veiculo, Cliente> colCliente;
 
     @FXML TextField txtNome;
     @FXML TextField txtEmail;
@@ -46,13 +48,16 @@ public class PrimaryController implements Initializable {
     @FXML TableColumn<Cliente, String> colEmail;
     @FXML TableColumn<Cliente, String> colTelefone;
 
+    @FXML ComboBox<Cliente> cbCliente;
+
     public void adicionarVeiculo(){
         var veiculo = new Veiculo(
             null, 
             txtMarca.getText(), 
             txtModelo.getText(), 
             Integer.valueOf( txtAno.getText() ), 
-            new BigDecimal( txtValor.getText() )
+            new BigDecimal( txtValor.getText() ),
+            cbCliente.getSelectionModel().getSelectedItem()
         );
 
         try{
@@ -150,6 +155,13 @@ public class PrimaryController implements Initializable {
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colTelefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));
+
+        try {
+            cbCliente.getItems().addAll(ClienteDao.buscarTodos());
+        } catch (SQLException e1) {
+            mostrarMensagem("Erro", "Erro ao buscar clientes");
+            e1.printStackTrace();
+        }
 
         carregarVeiculos();
         carregarClientes();
