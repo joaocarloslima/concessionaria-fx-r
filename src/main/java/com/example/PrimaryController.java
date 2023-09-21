@@ -5,7 +5,9 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
+import com.example.data.ClienteDao;
 import com.example.data.VeiculoDao;
+import com.example.model.Cliente;
 import com.example.model.Veiculo;
 
 import javafx.fxml.FXML;
@@ -22,14 +24,24 @@ public class PrimaryController implements Initializable {
     @FXML TextField txtAno;
     @FXML TextField txtValor;
 
-    @FXML TableView<Veiculo> tabela;
+    @FXML TableView<Veiculo> tabelaVeiculo;
 
     @FXML TableColumn<Veiculo, String> colMarca;
     @FXML TableColumn<Veiculo, String> colModelo;
     @FXML TableColumn<Veiculo, Integer> colAno;
     @FXML TableColumn<Veiculo, BigDecimal> colValor;
 
-    public void adicionar(){
+    @FXML TextField txtNome;
+    @FXML TextField txtEmail;
+    @FXML TextField txtTelefone;
+
+    @FXML TableView<Cliente> tabelaCliente;
+
+    @FXML TableColumn<Cliente, String> colNome;
+    @FXML TableColumn<Cliente, String> colEmail;
+    @FXML TableColumn<Cliente, String> colTelefone;
+
+    public void adicionarVeiculo(){
         var veiculo = new Veiculo(
             null, 
             txtMarca.getText(), 
@@ -40,17 +52,43 @@ public class PrimaryController implements Initializable {
 
         try{
             VeiculoDao.inserir(veiculo);
-            tabela.getItems().add(veiculo);
+            tabelaVeiculo.getItems().add(veiculo);
         }catch(SQLException e){
             e.printStackTrace();
         }
     }
 
-    public void carregar(){
-        tabela.getItems().clear();
+    public void carregarVeiculos(){
+        tabelaVeiculo.getItems().clear();
         try {
             var veiculos = VeiculoDao.buscarTodos();
-            veiculos.forEach(veiculo -> tabela.getItems().add(veiculo));
+            veiculos.forEach(veiculo -> tabelaVeiculo.getItems().add(veiculo));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void adicionarCliente(){
+        var cliente = new Cliente(
+            null, 
+            txtNome.getText(), 
+            txtEmail.getText(), 
+            txtTelefone.getText()
+        );
+
+        try{
+            ClienteDao.inserir(cliente);
+            tabelaCliente.getItems().add(cliente);
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void carregarClientes(){
+        tabelaCliente.getItems().clear();
+        try {
+            var clientes = ClienteDao.buscarTodos();
+            clientes.forEach(cliente -> tabelaCliente.getItems().add(cliente));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -63,7 +101,12 @@ public class PrimaryController implements Initializable {
         colAno.setCellValueFactory(new PropertyValueFactory<>("ano"));
         colValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
 
-        carregar();
+        colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+        colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+        colTelefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));
+
+        carregarVeiculos();
+        carregarClientes();
     }
 
    
